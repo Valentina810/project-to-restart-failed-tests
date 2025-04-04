@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Клонирование репозитория из GitHub на ветке master
+                //  клонирование репозитория из GitHub на ветке master
                 git branch: 'master', url: 'https://github.com/Valentina810/project-to-restart-failed-tests'
             }
         }
@@ -20,7 +20,6 @@ pipeline {
                     // даем исполняемые права файлу gradlew (на случай, если их нет)
                     sh 'chmod +x gradlew'
 
-                    // запускаем тесты с Gradle
                     // если тесты упадут, пайплайн продолжится, но статус будет "UNSTABLE"
                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                         sh './gradlew clean test'
@@ -28,34 +27,26 @@ pipeline {
                 }
             }
         }
-
-        stage('Allure Report') {
-            always {
-                // генерируем отчет Allure на основе результатов тестов
-                allure([
-                    results: [[path: "${ALLURE_RESULTS}"]],
-                    reportBuildPolicy: 'ALWAYS'
-                ])
-            }
-        }
-
-        stage('Upload to Allure TestOps') {
-            always {
-                script {
-                    // загружаем отчет в Allure TestOps
-                    allureTestOps([
-                        projectId: '34', // ID проекта в Allure TestOps
-                        serverId: 'AllureServer', // конфигурация сервера Allure
-                        credentialsId: 'allure-credentials', // данные авторизации
-                        results: [[path: "${ALLURE_RESULTS}"]]
-                    ])
-                }
-            }
-        }
     }
 
     post {
         always {
+            // генерируем отчет Allure на основе результатов тестов
+            allure([
+                results: [[path: "${ALLURE_RESULTS}"]],
+                reportBuildPolicy: 'ALWAYS'
+            ])
+
+            // загружаем отчет в Allure TestOps
+            script {
+                allureTestOps([
+                    projectId: '34', // ID проекта в Allure TestOps
+                    serverId: 'AllureServer', // конфигурация сервера Allure
+                    credentialsId: 'allure-credentials', // данные авторизации
+                    results: [[path: "${ALLURE_RESULTS}"]]
+                ])
+            }
+
             // архивируем результаты Allure, даже если тесты упали
             archiveArtifacts artifacts: "${ALLURE_RESULTS}/**", allowEmptyArchive: true
 
