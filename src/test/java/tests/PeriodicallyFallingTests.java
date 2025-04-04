@@ -24,24 +24,15 @@ public class PeriodicallyFallingTests {
 
     @Test
     @AllureId("71")
-    @DisplayName("Текущее время делится без остатка на 8")
-    public void testTimeIsAMultipleOfEight() {
-        assertEquals(0, System.currentTimeMillis() % 8);
+    @DisplayName("Текущее время делится без остатка на 4")
+    public void testTimeIsAMultipleOfFour() {
+        assertEquals(0, System.currentTimeMillis() % 4);
     }
 
     @Test
     @AllureId("72")
-    @DisplayName("Текущее время делится без остатка на 10")
-    public void testTimeIsAMultipleOfTen() {
-        assertEquals(0, System.currentTimeMillis() % 10);
-    }
-
-
-    @Test
-    @AllureId("137")
-    @DisplayName("Длинный тест")
-    public void testLong() throws InterruptedException {
-        Thread.sleep(15_000);
-        assertEquals(0, System.currentTimeMillis() % 10);
+    @DisplayName("Текущее время делится без остатка на 5")
+    public void testTimeIsAMultipleOfFive() {
+        assertEquals(0, System.currentTimeMillis() % 5);
     }
 }
